@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Streamer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .player-container {
+            margin-top: 30px;
+            display: none;
+        }
+        .player-container.active {
+            display: block;
+        }
+        video, audio {
+            width: 100%;
+            border-radius: 8px;
+            background: #000;
+        }
+        .info {
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            margin-top: 15px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Media Streamer</h1>
+        
+        <div class="input-group">
+            <input 
+                type="text" 
+                id="mediaUrl" 
+                placeholder="Paste media URL here (MP4, MP3, WebM, HLS...)"
+            >
+            <button onclick="loadMedia()">Stream</button>
+        </div>
+
+        <div class="player-container" id="playerContainer">
+            <video id="player" controls></video>
+        </div>
+
+        <div class="info">
+            <p>💡 Paste any direct media link and click Stream</p>
+            <p>Supports: MP4, WebM, MP3, WAV, HLS, and more</p>
+        </div>
+    </div>
+
+    <script>
+        const urlInput = document.getElementById('mediaUrl');
+        const player = document.getElementById('player');
+        const playerContainer = document.getElementById('playerContainer');
+
+        function loadMedia() {
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                alert('Please enter a media URL');
+                return;
+            }
+
+            // Determine media type
+            const extension = url.split('.').pop().toLowerCase();
+            const audioFormats = ['mp3', 'wav', 'aac', 'm4a', 'ogg'];
+            
+            // Replace player with appropriate type
+            if (audioFormats.includes(extension)) {
+                const audio = document.createElement('audio');
+                audio.id = 'player';
+                audio.controls = true;
+                audio.src = url;
+                playerContainer.innerHTML = '';
+                playerContainer.appendChild(audio);
+            } else {
+                player.src = url;
+                player.type = `video/${extension}`;
+            }
+
+            playerContainer.classList.add('active');
+            player.play().catch(err => console.log('Play error:', err));
+        }
+
+        // Allow Enter key to stream
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loadMedia();
+        });
+    </script>
+</body>
+</html>
